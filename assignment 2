@@ -1,0 +1,72 @@
+// fileManager.js
+
+const fs = require('fs');
+const path = require('path');
+
+class FileManager {
+    constructor(basePath) {
+        this.basePath = basePath || __dirname;
+    }
+
+    // Create a new file
+    createFile(fileName, content) {
+        const filePath = path.join(this.basePath, fileName);
+        fs.writeFileSync(filePath, content, 'utf8');
+        console.log(File ${fileName} created successfully.);
+    }
+
+    // Read a file
+    readFile(fileName) {
+        const filePath = path.join(this.basePath, fileName);
+        if (fs.existsSync(filePath)) {
+            const content = fs.readFileSync(filePath, 'utf8');
+            console.log(Content of ${fileName}:);
+            console.log(content);
+        } else {
+            console.log(File ${fileName} does not exist.);
+        }
+    }
+
+    // Update a file
+    updateFile(fileName, newContent) {
+        const filePath = path.join(this.basePath, fileName);
+        if (fs.existsSync(filePath)) {
+            fs.writeFileSync(filePath, newContent, 'utf8');
+            console.log(File ${fileName} updated successfully.);
+        } else {
+            console.log(File ${fileName} does not exist.);
+        }
+    }
+
+    // Delete a file
+    deleteFile(fileName) {
+        const filePath = path.join(this.basePath, fileName);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            console.log(File ${fileName} deleted successfully.);
+        } else {
+            console.log(File ${fileName} does not exist.);
+        }
+    }
+}
+
+// Usage example
+const manager = new FileManager();
+
+// Create a new file
+manager.createFile('example.txt', 'This is an example file.');
+
+// Read the file
+manager.readFile('example.txt');
+
+// Update the file
+manager.updateFile('example.txt', 'This content has been updated.');
+
+// Read the updated file
+manager.readFile('example.txt');
+
+// Delete the file
+manager.deleteFile('example.txt');
+
+// Attempt to read the deleted file
+manager.readFile('example.txt');
