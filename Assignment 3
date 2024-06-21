@@ -1,0 +1,90 @@
+const fs = require('fs');
+const request = require('request');
+
+function readFile(callback) {
+  fs.readFile('file.txt', 'utf8', (err, data) => {
+    if (err) {
+      return callback(err);
+    }
+    callback(null, data);
+  });
+}
+
+function makeHttpRequest(data, callback) {
+  request.post('http://example.com/api', { data }, (err, response, body) => {
+    if (err) {
+      return callback(err);
+    }
+    callback(null, body);
+  });
+}
+
+function writeToDatabase(data, callback) {
+  database.insert(data, (err, result) => {
+    if (err) {
+      return callback(err);
+    }
+    callback(null, result);
+  });
+}
+
+// Using the callback functions
+readFile((err, fileData) => {
+  if (err) {
+    return console.error('Error reading file:', err);
+  }
+  makeHttpRequest(fileData, (err, responseData) => {
+    if (err) {
+      return console.error('Error making HTTP request:', err);
+    }
+    writeToDatabase(responseData, (err, dbResult) => {
+      if (err) {
+        return console.error('Error writing to database:', err);
+      }
+      console.log('Operation successful:', dbResult);
+    });
+  });
+});
+//Now, let's refactor this code to use Promises and async/await for better readability and error handling.
+const fs = require('fs').promises;
+const request = require('request-promise-native');
+
+async function readFile() {
+  try {
+    const data = await fs.readFile('file.txt', 'utf8');
+    return data;
+  } catch (err) {
+    throw new Error(Error reading file: ${err.message});
+  }
+}
+
+async function makeHttpRequest(data) {
+  try {
+    const response = await request.post('http://example.com/api', { data });
+    return response;
+  } catch (err) {
+    throw new Error(Error making HTTP request: ${err.message});
+  }
+}
+
+async function writeToDatabase(data) {
+  try {
+    const result = await database.insert(data); // Assume database.insert returns a promise
+    return result;
+  } catch (err) {
+    throw new Error(Error writing to database: ${err.message});
+  }
+}
+
+async function main() {
+  try {
+    const fileData = await readFile();
+    const responseData = await makeHttpRequest(fileData);
+    const dbResult = await writeToDatabase(responseData);
+    console.log('Operation successful:', dbResult);
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
+main();
