@@ -1,0 +1,36 @@
+// server.js
+
+// Import required modules
+const express = require('express');
+
+// Create an Express application
+const app = express();
+
+// Define middleware (if needed)
+// Example of logging middleware
+app.use((req, res, next) => {
+  console.log('Time:', Date.now());
+  next();
+});
+
+// Define routes
+// Example of a GET request handler for the root endpoint
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
+
+// Example of a GET request handler for a specific endpoint
+app.get('/about', (req, res) => {
+  res.send('About page');
+});
+
+// Example of a POST request handler
+app.post('/api/users', (req, res) => {
+  res.send('POST request to the users endpoint');
+});
+
+// Start the server
+const port = 3000; // Port number can be any valid port number
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
