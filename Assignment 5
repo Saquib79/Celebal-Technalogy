@@ -1,0 +1,90 @@
+npm init -y
+npm install express mongoose body-
+const mongoose = require('mongoose');
+
+const entrySchema = new mongoose.Schema({
+  title: String,
+  description: String
+});
+
+const Entry = mongoose.model('Entry', entrySchema);
+
+module.exports = Entry;
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const Entry = require('./models/entry');
+
+const app = express();
+app.use(bodyParser.json());
+
+mongoose.connect('mongodb://localhost/mydatabase', { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Create
+app.post('/entries', async (req, res) => {
+  const entry = new Entry(req.body);
+  try {
+    await entry.save();
+    res.status(201).send(entry);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
+// Read all
+app.get('/entries', async (req, res) => {
+  try {
+    const entries = await Entry.find().exec();
+    res.send(entries);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+// Read one
+app.get('/entries/:id', async (req, res) => {
+  try {
+    const entry = await Entry.findById(req.params.id).exec();
+    if (!entry) {
+      res.status(404).send({ message: 'Entry not found' });
+    } else {
+      res.send(entry);
+    }
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+// Update
+app.put('/entries/:id', async (req, res) => {
+  try {
+    const entry = await Entry.findByIdAndUpdate(req.params.id, req.body, { new: true }).exec();
+    if (!entry) {
+      res.status(404).send({ message: 'Entry not found' });
+    } else {
+      res.send(entry);
+    }
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
+// Delete
+app.delete('/entries/:id', async (req, res) => {
+  try {
+    await Entry.findByIdAndRemove(req.params.id).exec();
+    res.send({ message: 'Entry deleted' });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+app.listen(3000, () => console.log('Server listening on port 3000'));
+POST /entries HTTP/1.1
+Content-Type: application/json
+
+{
+"title": "My first entry",
+"description": "This is my first entry"
+}
+GET /entries
